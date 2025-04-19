@@ -1,45 +1,15 @@
 "use client";
 
 import { useRef } from "react";
-import { Thread } from "@assistant-ui/react";
+import { createThread, getThreadState, sendMessage } from "@/lib/chatApi";
 import {
   LangChainMessage,
-  useLangGraphInterruptState,
   useLangGraphRuntime,
-  useLangGraphSendCommand,
 } from "@assistant-ui/react-langgraph";
-import { makeMarkdownText } from "@assistant-ui/react-markdown";
+import { AssistantRuntimeProvider } from "@assistant-ui/react";
+import { Thread } from "./assistant-ui/thread";
 
-import { createThread, getThreadState, sendMessage } from "@/lib/chatApi";
-import { ToolFallback } from "./tools/ToolFallback";
-import { Button } from "./ui/button";
-
-const MarkdownText = makeMarkdownText();
-
-const InterruptUI = () => {
-  const interrupt = useLangGraphInterruptState();
-  const sendCommand = useLangGraphSendCommand();
-  if (!interrupt) return null;
-
-  const respondYes = () => {
-    sendCommand({ resume: "yes" });
-  };
-  const respondNo = () => {
-    sendCommand({ resume: "no" });
-  };
-
-  return (
-    <div className="flex flex-col gap-2">
-      <div>Interrupt: {interrupt.value}</div>
-      <div className="flex items-end gap-2">
-        <Button onClick={respondYes}>Confirm</Button>
-        <Button onClick={respondNo}>Reject</Button>
-      </div>
-    </div>
-  );
-};
-
-export function MyAssistant() {
+export function Assistant() {
   const threadIdRef = useRef<string | undefined>(undefined);
   const runtime = useLangGraphRuntime({
     threadId: threadIdRef.current,
@@ -67,10 +37,8 @@ export function MyAssistant() {
   });
 
   return (
-    <Thread
-      runtime={runtime}
-      components={{ MessagesFooter: InterruptUI }}
-      assistantMessage={{ components: { Text: MarkdownText, ToolFallback } }}
-    />
+    <AssistantRuntimeProvider runtime={runtime}>
+      <Thread />
+    </AssistantRuntimeProvider>
   );
 }
