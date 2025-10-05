@@ -32,10 +32,13 @@ async function handleRequest(req: NextRequest, method: string) {
       options.body = await req.text();
     }
 
-    console.log({ url, path, queryString, options });
+    // 使用硬编码的后端 URL，因为 Edge Runtime 可能无法访问环境变量
+    const backendUrl = "http://backend-dev:8000";
+    
+    console.log({ url, path, queryString, options, backendUrl });
 
     const res = await fetch(
-      `${process.env["LANGGRAPH_API_URL"]}/${path}${queryString}`,
+      `${backendUrl}/${path}${queryString}`,
       options,
     );
 

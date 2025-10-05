@@ -1,9 +1,17 @@
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import interrupt
-from langchain_openai import ChatOpenAI
+from langchain_openai import AzureChatOpenAI
 from langgraph.graph import MessagesState
+import os
 
-model = ChatOpenAI(model="gpt-4o")
+# 配置 Azure OpenAI
+model = AzureChatOpenAI(
+    azure_deployment=os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME", "gpt-4o"),
+    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+    api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+    api_version=os.getenv("AZURE_OPENAI_API_VERSION", "2024-02-15-preview"),
+    temperature=0.7,
+)
 model = model.bind_tools(
     [
         {
@@ -61,7 +69,7 @@ def should_continue(state):
 
     last_tool_call = last_message.tool_calls[-1]
     if last_tool_call["name"] == "send_tweet":
-        return "send_tweet"
+        return "tools"
 
     return END
 
@@ -69,18 +77,16 @@ def should_continue(state):
 builder = StateGraph(MessagesState)
 
 builder.add_node("llm", agent)
-builder.add_node(" llm ", agent)
-builder.add_node("  tools  ", send_tweet)
+builder.add_node("tools", send_tweet)
 
 builder.add_edge(START, "llm")
-builder.add_edge("  tools  ", " llm ")
-builder.add_edge(" llm ", END)
-
+builder.add_edge("tools", "llm")
+builder.add_edge("llm", END)
 
 builder.add_conditional_edges(
     "llm",
     should_continue,
-    ["  tools  ", END],
+    ["tools", END],
 )
 
 

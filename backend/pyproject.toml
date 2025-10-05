@@ -5,12 +5,15 @@ description = "Starter template for making a new agent LangGraph."
 authors = [
     { name = "William Fu-Hinthorn", email = "13333726+hinthornw@users.noreply.github.com" },
 ]
-license = { text = "MIT" }
+license = "MIT"
 requires-python = ">=3.11,<4.0"
 dependencies = [
     "langgraph>=0.2.6",
+    "langgraph-cli[inmem]>=0.1.0",
     "python-dotenv>=1.0.1",
-    "langchain-openai (>=0.3.4,<0.4.0)"
+    "langchain-openai (>=0.3.4,<0.4.0)",
+    "uvicorn>=0.24.0",
+    "fastapi>=0.104.0"
 ]
 
 

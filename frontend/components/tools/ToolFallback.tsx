@@ -1,9 +1,6 @@
 import { ToolCallContentPartComponent } from "@assistant-ui/react";
-import { INTERNAL } from "@assistant-ui/react";
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useState } from "react";
-
-const { TooltipIconButton } = INTERNAL;
 
 export const ToolFallback: ToolCallContentPartComponent = ({
   toolName,
@@ -19,12 +16,13 @@ export const ToolFallback: ToolCallContentPartComponent = ({
           Used tool: <b>{toolName}</b>
         </p>
         <div className="flex-grow" />
-        <TooltipIconButton
-          tooltip={isCollapsed ? "Expand" : "Collapse"}
+        <button
+          className="p-1 hover:bg-gray-100 rounded"
           onClick={() => setIsCollapsed(!isCollapsed)}
+          title={isCollapsed ? "Expand" : "Collapse"}
         >
           {isCollapsed ? <ChevronUpIcon /> : <ChevronDownIcon />}
-        </TooltipIconButton>
+        </button>
       </div>
       {!isCollapsed && (
         <div className="flex flex-col gap-2 border-t pt-2">
